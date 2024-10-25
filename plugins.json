@@ -1,0 +1,35 @@
+{
+  "spigot": [],
+  "bukkit": [],
+  "hangar": [
+    {
+      "id": "Geyser",
+      "name": "Geyser-Spigot",
+      "enable": true
+    }
+  ],
+  "github": [
+    {
+      "id": "SkinsRestorer/SkinsRestorer",
+      "name": "SkinsRestorer",
+      "enable": true
+    }
+  ],
+  "jenkins": [
+    {
+      "id": "https://ci.viaversion.com/job/ViaVersion",
+      "name": "ViaVersion",
+      "enable": true
+    },
+    {
+      "id": "https://ci.viaversion.com/job/ViaBackwards",
+      "name": "ViaBackwards",
+      "enable": true
+    },
+    {
+      "id": "https://ci.viaversion.com/job/ViaRewind",
+      "name": "ViaRewind",
+      "enable": true
+    }
+  ]
+}
