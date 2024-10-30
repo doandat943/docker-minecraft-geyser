@@ -145,7 +145,6 @@ if [ -z "$Port" ]; then
     Port="25565"
 fi
 echo "Port: $Port"
-
 echo "------------------------------------"
 
 # Set working dir
@@ -155,8 +154,13 @@ working_dir="/minecraft"
 paper_download
 
 # Download plugins
-plugins=$(cat "$working_dir/plugins/.plugins.json")
+if [ ! -f "$working_dir/plugins/.plugins.json" ]; then
+    mv /plugins.json "$working_dir/plugins/.plugins.json"
+    mv /server-icon.png "$working_dir/"
+    sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
+fi
 
+plugins=$(cat "$working_dir/plugins/.plugins.json")
 for type in spigot bukkit hangar github jenkins; do
     for item in $(echo "$plugins" | jq -c ".$type[]"); do
         id=$(echo "$item" | jq -r '.id')
@@ -181,18 +185,13 @@ if [ -f "$working_dir/plugins/Geyser-Spigot/config.yml" ]; then
     sed -i "s/^ *port: .*/  port: $Port/" "$working_dir/plugins/Geyser-Spigot/config.yml"
 fi
 
+# Accept EULA
+echo "eula=true" >"$working_dir/eula.txt"
+
 # Start server
 echo "Starting Minecraft server..."
 cd $working_dir
 java -jar paper.jar --nogui
-
-# Accept EULA
-if grep -q "eula=false" "$working_dir/eula.txt"; then
-    mv /server-icon.png "$working_dir/"
-    mv /plugins.json "$working_dir/plugins/.plugins.json"
-    echo "eula=true" >"$working_dir/eula.txt"
-    sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
-fi
 
 # Exit container
 exit 0

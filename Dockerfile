@@ -7,8 +7,8 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apt/*
 
-COPY server-icon.png /
 COPY plugins.json /
+COPY server-icon.png /
 COPY curl-impersonate-chrome /usr/bin/
 COPY start.sh /
 RUN chmod +x /start.sh
