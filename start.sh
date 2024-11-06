@@ -146,7 +146,7 @@ Type=$(echo "$Type" | tr '[:lower:]' '[:upper:]')
 Version=$(echo "$Version" | tr '[:lower:]' '[:upper:]')
 
 if [ -z "$Type" ]; then
-    Type="SPIGOT"
+    Type="PAPER"
 fi
 echo "Type: $Type"
 
