@@ -31,6 +31,15 @@ download() {
     fi
 }
 
+spigot_download() {
+    echo "Downloading Spigot..."
+
+    # Get download url
+    url="https://github.com/doandat943/spigot-build/releases/download/Spigot/spigot-$Version.jar"
+
+    download "$working_dir/server.jar" "$url"
+}
+
 paper_download() {
     echo "Downloading Paper..."
 
@@ -38,7 +47,7 @@ paper_download() {
     Build=$(curl-impersonate -L -s "https://papermc.io/api/v2/projects/paper/versions/$Version" | jq -r '.builds[-1]')
     url="https://papermc.io/api/v2/projects/paper/versions/$Version/builds/$Build/downloads/paper-$Version-$Build.jar"
 
-    download "$working_dir/paper.jar" "$url"
+    download "$working_dir/server.jar" "$url"
 }
 
 spigot_download() {
@@ -133,12 +142,21 @@ echo "------------------------------------"
 echo "Minecraft Geyser server (doandat943)"
 
 # Set server version
-if [ -z "$Version" ]; then
-    Version="$(curl-impersonate -L -s "https://api.papermc.io/v2/projects/paper" | jq -r '.versions[-1]')"
-else
-    Version="$Version"
+Type=$(echo "$Type" | tr '[:lower:]' '[:upper:]')
+
+if [ -z "$Type" ]; then
+    Type="SPIGOT"
+fi
+echo "Type: $Type"
+
+# Set server version based on type
+if [ -z "$Version" ] && [ "$Type" == "SPIGOT" ]; then
+    Version="$(curl -L -s "https://api.github.com/repos/doandat943/spigot-build/releases/latest" | jq -r '.body' | grep -oP '\d+\.\d+\.\d+' | sort -V | tail -n 1)"
+elif [ -z "$Version" ] && [ "$Type" == "PAPER" ]; then
+    Version="$(curl -L -s "https://api.papermc.io/v2/projects/paper" | jq -r '.versions[-1]')"
 fi
 echo "Version: $Version"
+
 
 # Set server port
 if [ -z "$Port" ]; then
@@ -151,7 +169,12 @@ echo "------------------------------------"
 working_dir="/minecraft"
 
 # Download Paper
-paper_download
+
+if [ "$Type" == "SPIGOT" ]; then
+    spigot_download
+elif [ "$Type" == "PAPER" ]; then
+    paper_download
+fi
 
 # Download plugins
 if [ ! -f "$working_dir/plugins/.plugins.json" ]; then
@@ -191,7 +214,7 @@ echo "eula=true" >"$working_dir/eula.txt"
 # Start server
 echo "Starting Minecraft server..."
 cd $working_dir
-java -jar paper.jar --nogui
+java -jar server.jar --nogui
 
 # Exit container
 exit 0

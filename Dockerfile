@@ -13,7 +13,8 @@ COPY curl-impersonate-chrome /usr/bin/
 COPY start.sh /
 RUN chmod +x /start.sh
 
-ENV Version=
+ENV Type=SPIGOT
+ENV Version=LATEST
 ENV Port=25565
 
 EXPOSE 25565/tcp
