@@ -176,13 +176,20 @@ elif [ "$Type" == "PAPER" ]; then
     paper_download
 fi
 
-# Download plugins
-if [ ! -f "$working_dir/plugins/.plugins.json" ]; then
+# Accept EULA
+
+if [ ! -f "$working_dir/plugins" ]; then
+    mkdir "$working_dir/plugins"
     mv /plugins.json "$working_dir/plugins/.plugins.json"
     mv /server-icon.png "$working_dir/"
-    sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
+    echo "eula=true" > "$working_dir/eula.txt"
 fi
 
+if ! grep -q "§6Minecraft §eGeyser §c❤" "$working_dir/server.properties"; then
+  sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
+fi
+
+# Download plugins
 plugins=$(cat "$working_dir/plugins/.plugins.json")
 for type in spigot bukkit hangar github jenkins; do
     for item in $(echo "$plugins" | jq -c ".$type[]"); do
@@ -207,9 +214,6 @@ if [ -f "$working_dir/plugins/Geyser-Spigot/config.yml" ]; then
     sed -i "s/^ *auth-type: .*/  auth-type: offline/" "$working_dir/plugins/Geyser-Spigot/config.yml"
     sed -i "s/^ *port: .*/  port: $Port/" "$working_dir/plugins/Geyser-Spigot/config.yml"
 fi
-
-# Accept EULA
-echo "eula=true" >"$working_dir/eula.txt"
 
 # Start server
 echo "Starting Minecraft server..."
