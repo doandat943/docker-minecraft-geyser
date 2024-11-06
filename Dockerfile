@@ -11,7 +11,7 @@ COPY plugins.json /
 COPY server-icon.png /
 COPY curl-impersonate-chrome /usr/bin/
 COPY start.sh /
-RUN chmod +x /start.sh
+RUN chmod +x /start.sh /usr/bin/curl-impersonate-chrome
 
 ENV Type=SPIGOT
 ENV Version=LATEST
