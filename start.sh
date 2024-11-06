@@ -31,7 +31,7 @@ download() {
     fi
 }
 
-spigot_download() {
+download_spigot() {
     echo "Downloading Spigot..."
 
     # Get download url
@@ -40,7 +40,7 @@ spigot_download() {
     download "$working_dir/server.jar" "$url"
 }
 
-paper_download() {
+download_paper() {
     echo "Downloading Paper..."
 
     # Get download url
@@ -50,7 +50,7 @@ paper_download() {
     download "$working_dir/server.jar" "$url"
 }
 
-spigot_download() {
+spigot_downloader() {
     echo "Downloading $2 from Spigot..."
 
     # Get download url
@@ -59,7 +59,7 @@ spigot_download() {
     download "$working_dir/plugins/$2.jar" "$url"
 }
 
-bukkit_download() {
+bukkit_downloader() {
     echo "Downloading $2 from Bukkit..."
 
     # Get download url
@@ -68,7 +68,7 @@ bukkit_download() {
     download "$working_dir/plugins/$2.jar" "$url"
 }
 
-hangar_download() {
+hangar_downloader() {
     echo "Downloading $2 from Hangar..."
 
     # Get download url
@@ -81,7 +81,7 @@ hangar_download() {
     download "$working_dir/plugins/$2.jar" "$url"
 }
 
-github_download() {
+github_downloader() {
     echo "Downloading $2 from Github..."
 
     # Get download url
@@ -90,7 +90,7 @@ github_download() {
     download "$working_dir/plugins/$2.jar" "$url"
 }
 
-jenkins_download() {
+jenkins_downloader() {
     echo "Downloading $2 from Jenkins..."
 
     # Get download url
@@ -110,19 +110,19 @@ handle_plugins() {
     "true")
         case "$type" in
         "spigot")
-            spigot_download "$id" "$name"
+            spigot_downloader "$id" "$name"
             ;;
         "bukkit")
-            bukkit_download "$id" "$name"
+            bukkit_downloader "$id" "$name"
             ;;
         "hangar")
-            hangar_download "$id" "$name"
+            hangar_downloader "$id" "$name"
             ;;
         "github")
-            github_download "$id" "$name"
+            github_downloader "$id" "$name"
             ;;
         "jenkins")
-            jenkins_download "$id" "$name"
+            jenkins_downloader "$id" "$name"
             ;;
         esac
         ;;
@@ -171,9 +171,9 @@ working_dir="/minecraft"
 # Download Paper
 
 if [ "$Type" == "SPIGOT" ]; then
-    spigot_download
+    download_spigot
 elif [ "$Type" == "PAPER" ]; then
-    paper_download
+    download_paper
 fi
 
 # Accept EULA
@@ -183,10 +183,6 @@ if [ ! -f "$working_dir/plugins" ]; then
     mv /plugins.json "$working_dir/plugins/.plugins.json"
     mv /server-icon.png "$working_dir/"
     echo "eula=true" > "$working_dir/eula.txt"
-fi
-
-if ! grep -q "§6Minecraft §eGeyser §c❤" "$working_dir/server.properties"; then
-  sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
 fi
 
 # Download plugins
@@ -219,6 +215,11 @@ fi
 echo "Starting Minecraft server..."
 cd $working_dir
 java -jar server.jar --nogui
+
+
+if ! grep -q "§6Minecraft §eGeyser §c❤" "$working_dir/server.properties"; then
+  sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
+fi
 
 # Exit container
 exit 0
