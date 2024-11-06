@@ -143,6 +143,7 @@ echo "Minecraft Geyser server (doandat943)"
 
 # Set server version
 Type=$(echo "$Type" | tr '[:lower:]' '[:upper:]')
+Version=$(echo "$Version" | tr '[:lower:]' '[:upper:]')
 
 if [ -z "$Type" ]; then
     Type="SPIGOT"
@@ -150,13 +151,12 @@ fi
 echo "Type: $Type"
 
 # Set server version based on type
-if [ -z "$Version" ] && [ "$Type" == "SPIGOT" ]; then
+if { [ -z "$Version" ] || [ "$Version" == "LATEST" ]; } && [ "$Type" == "SPIGOT" ]; then
     Version="$(curl -L -s "https://api.github.com/repos/doandat943/spigot-build/releases/latest" | jq -r '.body' | grep -oP '\d+\.\d+\.\d+' | sort -V | tail -n 1)"
-elif [ -z "$Version" ] && [ "$Type" == "PAPER" ]; then
+elif { [ -z "$Version" ] || [ "$Version" == "LATEST" ]; } && [ "$Type" == "PAPER" ]; then
     Version="$(curl -L -s "https://api.papermc.io/v2/projects/paper" | jq -r '.versions[-1]')"
 fi
 echo "Version: $Version"
-
 
 # Set server port
 if [ -z "$Port" ]; then
