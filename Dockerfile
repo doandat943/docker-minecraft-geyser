@@ -10,8 +10,9 @@ RUN apt update && \
 COPY plugins.json /
 COPY server-icon.png /
 COPY curl-impersonate-chrome /usr/bin/
+COPY run.sh /
 COPY start.sh /
-RUN chmod +x /start.sh /usr/bin/curl-impersonate-chrome
+RUN chmod +x /run.sh /start.sh /usr/bin/curl-impersonate-chrome
 
 ENV Type=PAPER
 ENV Version=LATEST
@@ -20,4 +21,4 @@ ENV Port=25565
 EXPOSE 25565/tcp
 EXPOSE 25565/udp
 
-CMD ["/start.sh"]
+CMD ["/run.sh"]

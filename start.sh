@@ -173,9 +173,9 @@ fi
 
 if [ ! -f "$working_dir/plugins" ]; then
     mkdir "$working_dir/plugins"
-    mv /plugins.json "$working_dir/plugins/.plugins.json"
-    mv /server-icon.png "$working_dir/"
-    echo "eula=true" >"$working_dir/eula.txt"
+    mv "/plugins.json" "$working_dir/plugins/.plugins.json"
+    mv "/server-icon.png" "$working_dir/"
+    echo "eula=true" > "$working_dir/eula.txt"
 fi
 
 # Download plugins
