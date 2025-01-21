@@ -42,7 +42,7 @@ download_spigot() {
 download_paper() {
     echo "Downloading Paper..."
 
-    Build=$(curl -s https://api.papermc.io/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION}/builds | jq '.builds | map(select(.channel == "default") | .build) | .[-1]')
+    Build=$(curl -s https://api.papermc.io/v2/projects/paper/versions/$Version/builds | jq '.builds | map(select(.channel == "default") | .build) | .[-1]')
     url="https://api.papermc.io/v2/projects/paper/versions/$Version/builds/$Build/downloads/paper-$Version-$Build.jar"
 
     download "$working_dir/server.jar" "$url"
