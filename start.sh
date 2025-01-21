@@ -34,7 +34,6 @@ download() {
 download_spigot() {
     echo "Downloading Spigot..."
 
-    # Get download url
     url="https://github.com/doandat943/spigot-build/releases/download/Spigot/spigot-$Version.jar"
 
     download "$working_dir/server.jar" "$url"
@@ -43,9 +42,8 @@ download_spigot() {
 download_paper() {
     echo "Downloading Paper..."
 
-    # Get download url
-    Build=$(curl-impersonate -L -s "https://papermc.io/api/v2/projects/paper/versions/$Version" | jq -r '.builds[-1]')
-    url="https://papermc.io/api/v2/projects/paper/versions/$Version/builds/$Build/downloads/paper-$Version-$Build.jar"
+    Build=$(curl -s https://api.papermc.io/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION}/builds | jq '.builds | map(select(.channel == "default") | .build) | .[-1]')
+    url="https://api.papermc.io/v2/projects/paper/versions/$Version/builds/$Build/downloads/paper-$Version-$Build.jar"
 
     download "$working_dir/server.jar" "$url"
 }
@@ -53,7 +51,6 @@ download_paper() {
 spigot_downloader() {
     echo "Downloading $2 from Spigot..."
 
-    # Get download url
     url="https://api.spiget.org/v2/resources/$1/download"
 
     download "$working_dir/plugins/$2.jar" "$url"
@@ -62,7 +59,6 @@ spigot_downloader() {
 bukkit_downloader() {
     echo "Downloading $2 from Bukkit..."
 
-    # Get download url
     url="https://dev.bukkit.org/projects/$1/files/latest"
 
     download "$working_dir/plugins/$2.jar" "$url"
@@ -71,7 +67,6 @@ bukkit_downloader() {
 hangar_downloader() {
     echo "Downloading $2 from Hangar..."
 
-    # Get download url
     wget_output=$(curl-impersonate -L -s "https://hangar.papermc.io/api/v1/projects/$1/versions?limit=1&offset=0&channel=Release&platform=PAPER")
     url=$(echo "$wget_output" | jq -r '.result[0].downloads.PAPER.downloadUrl')
     if [ "$url" = "null" ]; then
@@ -84,7 +79,6 @@ hangar_downloader() {
 github_downloader() {
     echo "Downloading $2 from Github..."
 
-    # Get download url
     url=$(curl-impersonate -L -s "https://api.github.com/repos/$1/releases/latest" | jq -r '.assets[0].browser_download_url')
 
     download "$working_dir/plugins/$2.jar" "$url"
@@ -93,7 +87,6 @@ github_downloader() {
 jenkins_downloader() {
     echo "Downloading $2 from Jenkins..."
 
-    # Get download url
     wget_output=$(curl-impersonate -L -s "$1/lastSuccessfulBuild/api/json" | jq -r '.artifacts[0].relativePath')
     url="$1/lastSuccessfulBuild/artifact/$wget_output"
 
@@ -168,7 +161,7 @@ echo "------------------------------------"
 # Set working dir
 working_dir="/minecraft"
 
-# Download Paper
+# Download Spigot/Paper
 
 if [ "$Type" == "SPIGOT" ]; then
     download_spigot
@@ -182,7 +175,7 @@ if [ ! -f "$working_dir/plugins" ]; then
     mkdir "$working_dir/plugins"
     mv /plugins.json "$working_dir/plugins/.plugins.json"
     mv /server-icon.png "$working_dir/"
-    echo "eula=true" > "$working_dir/eula.txt"
+    echo "eula=true" >"$working_dir/eula.txt"
 fi
 
 # Download plugins
@@ -202,6 +195,7 @@ if [ -f "$working_dir/server.properties" ]; then
     sed -i "s/^online-mode=.*/online-mode=false/" "$working_dir/server.properties"
     sed -i "s/^server-port=.*/server-port=$Port/" "$working_dir/server.properties"
     sed -i "s/^query\.port=.*/query\.port=$Port/" "$working_dir/server.properties"
+    sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
 fi
 
 # Update Geyser config
@@ -215,11 +209,6 @@ fi
 echo "Starting Minecraft server..."
 cd $working_dir
 java -jar server.jar --nogui
-
-
-if ! grep -q "§6Minecraft §eGeyser §c❤" "$working_dir/server.properties"; then
-  sed -i "s/^motd=.*/motd=§6Minecraft §eGeyser §c❤/" "$working_dir/server.properties"
-fi
 
 # Exit container
 exit 0
